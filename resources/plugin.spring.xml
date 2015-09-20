@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:ws="http://jax-ws.dev.java.net/spring/core" 
+       xmlns:wss="http://jax-ws.dev.java.net/spring/servlet" 
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+                           http://jax-ws.dev.java.net/spring/core http://jax-ws.dev.java.net/spring/core.xsd
+                           http://jax-ws.dev.java.net/spring/servlet http://jax-ws.dev.java.net/spring/servlet.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+                           http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd"
+       default-lazy-init="true">
+
+  <!-- ========================================= -->
+  <!--    BASE PLUGIN.SPRING.XML DECLARATIONS    -->
+  <!-- ========================================= -->
+
+  <context:annotation-config />
+
+  <!-- (optional) register beans in PentahoSystem object factory --> 
+  <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" lazy-init="false"/>
+  
+  <!-- JAX-RS beans entry point -->
+  <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
+
+  <!-- ========================================= -->
+  <!--   CONTENT GENERATOR PER FILE EXTENSION    -->
+  <!-- ========================================= -->
+
+  <bean id="txt" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/>
+  <bean id="log" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/>
+
+  <!-- ========================================= -->
+  <!--      REST ENDPOINT BEAN DECLARATION       -->
+  <!-- ========================================= -->
+
+  <bean id="basicPluginRestApi" class="pt.webdetails.basic.plugin.web.BasicPluginRestApi"/>
+
+  <!-- ========================================= -->
+  <!--      BASIC PLUGIN BEAN DECLARATIONS       -->
+  <!-- ========================================= -->
+
+  <!-- a worker that added some file extensions to an *already existing* mime type declaration -->
+  <bean id="basicPluginSimpleExtensionAddingWorker" class="pt.webdetails.basic.plugin.workers.BasicPluginSimpleExtensionAddingWorker">
+    <constructor-arg>
+      <util:list value-type="org.pentaho.platform.api.mimetype.IMimeType">
+        <ref local="basicPluginMimeTypeTextPlain" />
+        <!-- add more mimeTypes here -->
+      </util:list>
+    </constructor-arg>
+    <pen:publish as-type="INTERFACES" />
+  </bean>
+
+  <!-- ========================================= -->
+  <!--        MIME TYPE BEAN DECLARATIONS        -->
+  <!-- ========================================= -->
+
+  <bean id="basicPluginMimeTypeTextPlain" class="org.pentaho.platform.core.mimetype.MimeType">
+    <constructor-arg value="text/plain" /> <!-- 'text/plain' mimeType defined in ImportHandlerMimeTypeDefinitions.xml -->
+    <constructor-arg>
+      <util:list>
+        <value>txt</value> <!-- adding .txt to 'text/plain' list -->
+        <value>log</value> <!-- adding .log to 'text/plain' list -->
+      </util:list>
+    </constructor-arg>
+    <property name="converter">
+      <ref local="streamConverterProxy" />
+    </property>
+  </bean>
+
+  <bean id="basicPluginMimeTypeApplication" class="org.pentaho.platform.core.mimetype.MimeType">
+    <constructor-arg value="application/vnd.basic-plugin.text" /> <!-- and entirelly new mime type -->
+    <constructor-arg>
+      <util:list>
+        <value>bpf</value> <!-- adding .bpf ( 'B'asic 'P'lugin 'F'ile ) extension -->
+      </util:list>
+    </constructor-arg>
+    <property name="converter">
+      <ref local="streamConverterProxy" />
+    </property>
+  </bean>
+
+  <bean id="streamConverterProxy" class="pt.webdetails.basic.plugin.proxy.ConverterProxy">
+    <constructor-arg value="streamConverter" /> <!-- set in ImportExport.xml -->
+  </bean>
+
+</beans>

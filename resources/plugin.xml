@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="basic-plugin" title="Pentaho Basic Plugin">
+	
+	<overlays>
+		<overlay id="startup.basic-plugin" resourcebundle="content/basic-plugin/resources/lang/messages">
+			<menubar id="toolsmenu">
+	        	<menuitem id="basic-plugin" 
+	        			  label="${launcher.basic-plugin}" 
+	        			  command="mantleXulHandler.openUrl('${launcher.basic-plugin}',
+	        			  '${launcher.basic-plugin.tooltip}',
+	        			  'api/repos/%3Apublic%3Abasic-plugin-dir%3Ahello-world.txt/basic-plugin.open')"/>
+	      	</menubar>
+	    </overlay>
+	</overlays>
+
+
+	<lifecycle-listener class="pt.webdetails.basic.plugin.BasicPluginLifecycleListener" />
+	
+	<content-generator class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" />
+
+	<content-types>
+
+        <static-paths>
+            <static-path url="/basic-plugin/resources" localFolder="resources"/>
+        </static-paths>
+
+        <content-type type="txt" mime-type="text/plain">
+        	<title>TXT</title>
+	      	<operations>
+		        <operation>
+		          	<id>OPEN</id>
+                	<perspective>basic-plugin.open</perspective>
+		        </operation>
+		    </operations>
+    	</content-type>
+
+    </content-types>
+
+
+    
+    <external-resources />
+
+</plugin>
