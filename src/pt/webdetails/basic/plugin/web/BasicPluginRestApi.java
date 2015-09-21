@@ -15,6 +15,7 @@ package pt.webdetails.basic.plugin.web;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
@@ -35,7 +36,13 @@ public class BasicPluginRestApi {
 
   protected static Log logger = LogFactory.getLog( BasicPluginRestApi.class );
 
-  private IUnifiedRepository repository = PentahoSystem.get( IUnifiedRepository.class );
+  private IUnifiedRepository repository;// = PentahoSystem.get( IUnifiedRepository.class );
+  private IPluginResourceLoader resourceLoader;
+
+  public BasicPluginRestApi( IUnifiedRepository repository, IPluginResourceLoader resourceLoader ){
+    setRepository( repository );
+    setResourceLoader( resourceLoader );
+  }
 
   @GET
   @Path( Constants.JaxRs.READY )
@@ -54,9 +61,9 @@ public class BasicPluginRestApi {
 
     try {
 
-        if( ( file = repository.getFile( path ) ) != null ) {
+      if( ( file = getRepository().getFile( path ) ) != null ) {
 
-          SimpleRepositoryFileData data = repository.getDataForRead( file.getId(), SimpleRepositoryFileData.class );
+          SimpleRepositoryFileData data = getRepository().getDataForRead( file.getId(), SimpleRepositoryFileData.class );
           return Response.ok( IOUtils.toString( data.getInputStream() ), MediaType.TEXT_PLAIN_TYPE ).build();
         }
 
@@ -65,5 +72,21 @@ public class BasicPluginRestApi {
       return Response.serverError().build();
     }
     return Response.status( Response.Status.NOT_FOUND ).build();
+  }
+
+  public IUnifiedRepository getRepository() {
+    return repository;
+  }
+
+  public void setRepository( IUnifiedRepository repository ) {
+    this.repository = repository;
+  }
+
+  public IPluginResourceLoader getResourceLoader() {
+    return resourceLoader;
+  }
+
+  public void setResourceLoader( IPluginResourceLoader resourceLoader ) {
+    this.resourceLoader = resourceLoader;
   }
 }

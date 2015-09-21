@@ -28,7 +28,7 @@
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
 
   <!-- ========================================= -->
-  <!--   CONTENT GENERATOR PER FILE EXTENSION    -->
+  <!--    CONTENT GENERATOR BEAN DECLARATION     -->
   <!-- ========================================= -->
 
   <bean id="txt" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/>
@@ -38,7 +38,14 @@
   <!--      REST ENDPOINT BEAN DECLARATION       -->
   <!-- ========================================= -->
 
-  <bean id="basicPluginRestApi" class="pt.webdetails.basic.plugin.web.BasicPluginRestApi"/>
+  <bean id="basicPluginRestApi" class="pt.webdetails.basic.plugin.web.BasicPluginRestApi">
+    <constructor-arg>
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" />
+    </constructor-arg>
+    <constructor-arg>
+      <pen:bean class="org.pentaho.platform.api.engine.IPluginResourceLoader" />
+    </constructor-arg>
+  </bean>
 
   <!-- ========================================= -->
   <!--      BASIC PLUGIN BEAN DECLARATIONS       -->
@@ -52,7 +59,7 @@
         <!-- add more mimeTypes here -->
       </util:list>
     </constructor-arg>
-    <pen:publish as-type="INTERFACES" />
+    <pen:publish as-type="INTERFACES" /> <!-- publishing bean as interface IBasicPluginWorker -->
   </bean>
 
   <!-- ========================================= -->

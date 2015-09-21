@@ -34,6 +34,16 @@
 		    </operations>
     	</content-type>
 
+    	<content-type type="log" mime-type="text/plain">
+        	<title>LOG</title>
+	      	<operations>
+		        <operation>
+		          	<id>OPEN</id>
+                	<perspective>basic-plugin.open</perspective>
+		        </operation>
+		    </operations>
+    	</content-type>
+
     </content-types>
 
 
