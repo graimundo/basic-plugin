@@ -31,7 +31,13 @@
   <!--    CONTENT GENERATOR BEAN DECLARATION     -->
   <!-- ========================================= -->
 
-  <bean id="bp.content.viewer" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/>
+  <bean id="txt" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/> <!-- content generator for .txt files -->
+
+  <!-- ========================================= -->
+  <!--    CG PERSPECTIVES BEAN DECLARATION       -->
+  <!-- ========================================= -->
+
+  <bean id="txt.edit" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/> <!-- defined in plugin.xml -->
 
   <!-- ========================================= -->
   <!--      REST ENDPOINT BEAN DECLARATION       -->
@@ -67,7 +73,6 @@
     <constructor-arg>
       <util:list>
         <value>txt</value> <!-- adding .txt to 'text/plain' list -->
-        <value>log</value> <!-- adding .log to 'text/plain' list -->
       </util:list>
     </constructor-arg>
     <property name="converter">
