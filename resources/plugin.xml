@@ -7,7 +7,7 @@
 	        	<menuitem id="basic-plugin" 
 	        			  label="${launcher.basic-plugin}" 
 	        			  command="mantleXulHandler.openUrl('${launcher.basic-plugin}','${launcher.basic-plugin.tooltip}', 
-	        			  'api/repos/%3Apublic%3Abasic-plugin-dir%3Ahello-world.txt')"/>
+	        			  'plugin/basic-plugin/api/ready')"/>
 	      	</menubar>
 	    </overlay>
 	</overlays>
@@ -17,7 +17,7 @@
 	<content-types>
 
         <static-paths>
-        	<!-- this translates to /pentaho/api/repos/resources/PATH_OF_STATIC_RESOURCE -->
+        	<!-- this translates to /pentaho/api/repos/basic-plugin/resources/PATH_OF_STATIC_RESOURCE -->
             <static-path url="/basic-plugin/resources" localFolder="resources"/>
         </static-paths>
 
