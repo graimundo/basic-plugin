@@ -18,7 +18,7 @@ public class Constants {
 
   public static class JaxRs {
 
-    public static final String CONTENT ="content";
+    public static final String VIEW ="view";
     public static final String READY ="ready";
     public static final String PATH ="path";
 

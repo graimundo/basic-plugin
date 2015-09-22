@@ -15,7 +15,6 @@ package pt.webdetails.basic.plugin.web;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
@@ -26,6 +25,7 @@ import pt.webdetails.cpf.utils.MimeTypes;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.InputStream;
 
 /**
  * rest entry endpoint is '<plugin-id>/api/'
@@ -36,12 +36,14 @@ public class BasicPluginRestApi {
 
   protected static Log logger = LogFactory.getLog( BasicPluginRestApi.class );
 
-  private IUnifiedRepository repository;// = PentahoSystem.get( IUnifiedRepository.class );
-  private IPluginResourceLoader resourceLoader;
+  private IUnifiedRepository repository;
 
-  public BasicPluginRestApi( IUnifiedRepository repository, IPluginResourceLoader resourceLoader ){
+  public BasicPluginRestApi( IUnifiedRepository repository ){
     setRepository( repository );
-    setResourceLoader( resourceLoader );
+
+
+    // TODO REMOVE THIS LINE IN FINAL VERSION !!! THIS IS A WORKAROUND FOR A CURRENT 6.0 PLATFORM BUG !!!
+    setRepository( PentahoSystem.get( IUnifiedRepository.class ) );
   }
 
   @GET
@@ -53,25 +55,32 @@ public class BasicPluginRestApi {
   }
 
   @GET
-  @Path( Constants.JaxRs.CONTENT )
+  @Path( Constants.JaxRs.VIEW )
   public Response content( @QueryParam( Constants.JaxRs.PATH ) String path ) {
-    logger.info( "content()" );
+    logger.info( "view()" );
 
     RepositoryFile file;
+    InputStream content = null;
 
     try {
 
-      if( ( file = getRepository().getFile( path ) ) != null ) {
+      if( ( file = getRepository().getFile( path ) ) == null ) {
+        logger.warn( "file not found in path " + path );
+        return Response.status( Response.Status.NOT_FOUND ).build();
+      }
 
-          SimpleRepositoryFileData data = getRepository().getDataForRead( file.getId(), SimpleRepositoryFileData.class );
-          return Response.ok( IOUtils.toString( data.getInputStream() ), MediaType.TEXT_PLAIN_TYPE ).build();
-        }
+      SimpleRepositoryFileData data = getRepository().getDataForRead( file.getId(), SimpleRepositoryFileData.class );
+      content = data.getInputStream();
+
+      return Response.ok( IOUtils.toString( content ), MediaType.TEXT_PLAIN_TYPE ).build();
 
     } catch ( Exception e ) {
       logger.error( e );
       return Response.serverError().build();
+
+    } finally {
+      IOUtils.closeQuietly( content );
     }
-    return Response.status( Response.Status.NOT_FOUND ).build();
   }
 
   public IUnifiedRepository getRepository() {
@@ -82,11 +91,4 @@ public class BasicPluginRestApi {
     this.repository = repository;
   }
 
-  public IPluginResourceLoader getResourceLoader() {
-    return resourceLoader;
-  }
-
-  public void setResourceLoader( IPluginResourceLoader resourceLoader ) {
-    this.resourceLoader = resourceLoader;
-  }
 }

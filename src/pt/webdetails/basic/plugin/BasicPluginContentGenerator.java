@@ -13,6 +13,7 @@
 package pt.webdetails.basic.plugin;
 
 import org.apache.commons.io.IOUtils;
+import org.pentaho.platform.api.engine.IOutputHandler;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
@@ -23,6 +24,7 @@ import pt.webdetails.cpf.utils.PluginIOUtils;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.io.InputStream;
 
 public class BasicPluginContentGenerator extends SimpleContentGenerator {
 
@@ -38,18 +40,39 @@ public class BasicPluginContentGenerator extends SimpleContentGenerator {
     getResponse().setContentType( MimeTypes.HTML );
     getResponse().setHeader( "Cache-Control", "no-cache" );
 
-    if( ( file = repository.getFile( path ) ) != null ) {
-
-      SimpleRepositoryFileData data = repository.getDataForRead( file.getId() , SimpleRepositoryFileData.class );
-
-      PluginIOUtils.writeOutAndFlush( getResponse().getOutputStream(), IOUtils.toString( data.getInputStream() ) );
-      return;
+    if( ( file = getRepository().getFile( path ) ) == null ) {
+      throw new WebApplicationException( Response.Status.NOT_FOUND );
     }
 
-    throw new WebApplicationException( Response.Status.NOT_FOUND );
+    InputStream content = null;
+
+    try {
+
+      SimpleRepositoryFileData data = getRepository().getDataForRead( file.getId(), SimpleRepositoryFileData.class );
+
+      content = data.getInputStream();
+
+      PluginIOUtils.writeOutAndFlush( getResponse().getOutputStream(), IOUtils.toString( content ) );
+
+    } finally {
+      IOUtils.closeQuietly( content );
+    }
   }
 
-  @Override public String getPluginName() {
+
+  @Override public void setOutputHandler( IOutputHandler outputHandler ){
+    info( "setOutputHandler()" );
+  }
+
+  public IUnifiedRepository getRepository() {
+    return repository;
+  }
+
+  public void setRepository( IUnifiedRepository repository ) {
+    this.repository = repository;
+  }
+
+  public String getPluginName() {
     return Constants.PLUGIN_ID;
   }
 }

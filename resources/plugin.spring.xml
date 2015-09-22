@@ -31,8 +31,7 @@
   <!--    CONTENT GENERATOR BEAN DECLARATION     -->
   <!-- ========================================= -->
 
-  <bean id="txt" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/>
-  <bean id="log" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/>
+  <bean id="bp.content.viewer" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/>
 
   <!-- ========================================= -->
   <!--      REST ENDPOINT BEAN DECLARATION       -->
@@ -41,9 +40,6 @@
   <bean id="basicPluginRestApi" class="pt.webdetails.basic.plugin.web.BasicPluginRestApi">
     <constructor-arg>
       <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" />
-    </constructor-arg>
-    <constructor-arg>
-      <pen:bean class="org.pentaho.platform.api.engine.IPluginResourceLoader" />
     </constructor-arg>
   </bean>
 
@@ -75,22 +71,24 @@
       </util:list>
     </constructor-arg>
     <property name="converter">
-      <ref local="streamConverterProxy" />
+      <ref bean="streamConverterProxy" />
     </property>
   </bean>
 
+  <!-- TODO GET IMPORT-HANDLER WORKING FOR .bp files -->
   <bean id="basicPluginMimeTypeApplication" class="org.pentaho.platform.core.mimetype.MimeType">
     <constructor-arg value="application/vnd.basic-plugin.text" /> <!-- and entirelly new mime type -->
     <constructor-arg>
       <util:list>
-        <value>bpf</value> <!-- adding .bpf ( 'B'asic 'P'lugin 'F'ile ) extension -->
+        <value>bp</value> <!-- adding .bp ( 'B'asic 'P'lugin ) file extension -->
       </util:list>
     </constructor-arg>
     <property name="converter">
-      <ref local="streamConverterProxy" />
+      <ref bean="streamConverterProxy" />
     </property>
   </bean>
 
+  <!-- TODO REMOVE THIS PROXY BEAN IN FINAL VERSION !!! THIS IS A WORKAROUND FOR A 6.0 PLATFORM BUG !!! -->
   <bean id="streamConverterProxy" class="pt.webdetails.basic.plugin.proxy.ConverterProxy">
     <constructor-arg value="streamConverter" /> <!-- set in ImportExport.xml -->
   </bean>
