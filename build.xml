@@ -196,7 +196,7 @@
   <target name="clean" depends="subfloor.clean" >
     <delete dir="${lib.dir}" verbose="true"/>
     <delete dir="${testlib.dir}" verbose="true"/>
-    <delete dir="${runtimelib.dir}" verbose="true"/>
+    <!-- <delete dir="${runtimelib.dir}" verbose="true"/> -->
   </target>
 
 </project>

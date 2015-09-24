@@ -13,18 +13,31 @@
 package pt.webdetails.basic.plugin;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.api.engine.IParameterProvider;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
-import pt.webdetails.cpf.SimpleContentGenerator;
-import pt.webdetails.cpf.utils.MimeTypes;
-import pt.webdetails.cpf.utils.PluginIOUtils;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.services.solution.BaseContentGenerator;
+import org.pentaho.platform.util.messages.LocaleHelper;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLDecoder;
 
-public class BasicPluginContentGenerator extends SimpleContentGenerator {
+public class BasicPluginContentGenerator extends BaseContentGenerator {
+
+  protected static Log logger = LogFactory.getLog( BasicPluginLifecycleListener.class );
+  private static final String PATH_PARAMETER_ID = "path";
+  private static final String MIME_HTML = "text/html";
 
   private IUnifiedRepository repository;
 
@@ -32,32 +45,41 @@ public class BasicPluginContentGenerator extends SimpleContentGenerator {
     setRepository( repository );
   }
 
+  @Override public Log getLogger() {
+    return logger;
+  }
+
   @Override public void createContent() throws Exception {
     info( "createContent()" );
 
-    String path = getPathParameterAsString( Constants.JaxRs.PATH, null );
+    IParameterProvider pathParams = parameterProviders.get( PATH_PARAMETER_ID );
 
     RepositoryFile file;
+    String urlEncodedFilePath;
 
-    getResponse().setContentType( MimeTypes.HTML );
-    getResponse().setHeader( "Cache-Control", "no-cache" );
+    if( pathParams != null
+        && !StringUtils.isEmpty( ( urlEncodedFilePath = pathParams.getStringParameter( Constants.JaxRs.PATH, null ) ) ) ) {
 
-    if( ( file = getRepository().getFile( path ) ) == null ) {
-      throw new WebApplicationException( Response.Status.NOT_FOUND );
-    }
+      String filePath = URLDecoder.decode( urlEncodedFilePath, LocaleHelper.UTF_8 );
 
-    InputStream content = null;
+      getResponse().setContentType( MIME_HTML );
+      getResponse().setHeader( "Cache-Control", "no-cache" );
 
-    try {
+      if ( ( file = getRepository().getFile( filePath ) ) == null ) {
+        throw new WebApplicationException( Response.Status.NOT_FOUND );
+      }
 
-      SimpleRepositoryFileData data = getRepository().getDataForRead( file.getId(), SimpleRepositoryFileData.class );
+      InputStream content = null;
 
-      content = data.getInputStream();
+      try {
 
-      PluginIOUtils.writeOutAndFlush( getResponse().getOutputStream(), IOUtils.toString( content ) );
+        SimpleRepositoryFileData data = getRepository().getDataForRead( file.getId(), SimpleRepositoryFileData.class );
 
-    } finally {
-      IOUtils.closeQuietly( content );
+        writeOutAndFlush( getResponse().getOutputStream(), data.getInputStream() );
+
+      } finally {
+        IOUtils.closeQuietly( content );
+      }
     }
   }
 
@@ -69,7 +91,30 @@ public class BasicPluginContentGenerator extends SimpleContentGenerator {
     this.repository = repository;
   }
 
-  public String getPluginName() {
-    return Constants.PLUGIN_ID;
+  protected HttpServletResponse getResponse(){
+    return (HttpServletResponse) parameterProviders.get( PATH_PARAMETER_ID ).getParameter( "httpresponse" );
+  }
+
+  private void writeOutAndFlush( OutputStream out, InputStream data ) {
+    writeOut( out, data );
+    flush( out );
+  }
+
+  private void writeOut( OutputStream out, InputStream data ){
+    try {
+      IOUtils.copy( data, out );
+    } catch (IOException ex){
+      getLogger().error( ex );
+    }
+  }
+
+  private void flush( OutputStream out ) {
+    try {
+      if ( out != null ) {
+        out.flush();
+      }
+    } catch ( IOException ex ) {
+      getLogger().error( ex );
+    }
   }
 }

@@ -19,7 +19,6 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
 import pt.webdetails.basic.plugin.Constants;
-import pt.webdetails.cpf.utils.MimeTypes;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -46,7 +45,7 @@ public class BasicPluginRestApi {
 
   @GET
   @Path( Constants.JaxRs.READY )
-  @Produces( { MimeTypes.PLAIN_TEXT } )
+  @Produces( { "text/plain" } )
   public String ready() {
     logger.info( "ready()" );
     return Boolean.toString( true );
