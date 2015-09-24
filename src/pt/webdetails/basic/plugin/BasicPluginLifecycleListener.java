@@ -16,44 +16,59 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IPlatformReadyListener;
 import org.pentaho.platform.api.engine.IPluginLifecycleListener;
+import org.pentaho.platform.api.engine.IPluginProvider;
 import org.pentaho.platform.api.engine.PluginLifecycleException;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
-import pt.webdetails.basic.plugin.workers.IBasicPluginWorker;
-
-import java.util.List;
 
 public class BasicPluginLifecycleListener implements IPluginLifecycleListener, IPlatformReadyListener {
 
   protected static Log logger = LogFactory.getLog( BasicPluginLifecycleListener.class );
 
+  /**
+   * Called just prior to the plugin being registered with the platform. Note: This event does *not* precede the
+   * detection of the plugin by any {@link IPluginProvider}s
+   *
+   * @throws PluginLifecycleException
+   *           if an error occurred
+   */
   @Override
   public void init() throws PluginLifecycleException {
     logger.info( "init()" );
   }
 
+  /**
+   * Called after the plugin has been registered with the platform, i.e. all content generators, components, etc.
+   * have been loaded.
+   *
+   * @throws PluginLifecycleException
+   *           if an error occurred
+   */
   @Override
   public void loaded() throws PluginLifecycleException {
     logger.info( "loaded()" );
   }
 
+  /**
+   * Called when the plugin needs to be unloaded. This method should release all resources and return things to a
+   * pre-loaded state.
+   *
+   * @throws PluginLifecycleException
+   *           if an error occurred
+   */
   @Override
   public void unLoaded() throws PluginLifecycleException {
     logger.info( "unloaded()" );
   }
 
+  /**
+   * Called after the platform has been booted and is ready to receive requests.  All plugins have been
+   * initialized and loaded, spring has been loaded and all beans are ready.  All components and sub
+   * systems have been started - scheduler/repository/reporting/mondrian - etc.
+   *
+   * @throws PluginLifecycleException
+   *           if an error occurred
+   */
   @Override
   public void ready() throws PluginLifecycleException {
     logger.info( "ready()" );
-
-    /* all platform beans are now up-and-running, so let's go ahead and do some plugin logic */
-
-    List<IBasicPluginWorker> workers = PentahoSystem.getAll( IBasicPluginWorker.class );
-
-    if( workers != null ){
-
-      for( IBasicPluginWorker worker : workers ) {
-        worker.work();
-      }
-    }
   }
 }

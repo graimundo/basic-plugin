@@ -25,7 +25,7 @@ import org.pentaho.platform.plugin.services.importexport.ExportHandler;
 
 import java.util.List;
 
-public class BasicPluginImportExportPublishWorker implements IBasicPluginWorker {
+public class BasicPluginImportExportPublishWorker {
 
   private static final Log logger = LogFactory.getLog( BasicPluginImportExportPublishWorker.class );
 
@@ -65,7 +65,7 @@ public class BasicPluginImportExportPublishWorker implements IBasicPluginWorker 
     }
   }
 
-  @Override public void work() {
+  public void work() {
 
     // file import handlers
     if( getPlatformImporter() != null && getImportHandlers() != null ){

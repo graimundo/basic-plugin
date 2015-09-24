@@ -21,8 +21,9 @@
 
   <context:annotation-config />
 
-  <!-- (optional) register beans in PentahoSystem object factory --> 
-  <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" lazy-init="false"/>
+  <!-- (optional) When added as a bean to a Spring context this class will register the ApplicationContext as 
+        a StandalongSpringPentahoObjectFactory with the PentahoSystem --> 
+  <!-- <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" lazy-init="false"/> -->
   
   <!-- JAX-RS beans entry point -->
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
@@ -38,7 +39,8 @@
   <!--    CONTENT GENERATOR BEAN DECLARATION     -->
   <!-- ========================================= -->
 
-  <bean id="bp" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> <!-- content generator for .bp files -->
+  <!-- content generator for .bp files -->
+  <bean id="bp" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> 
     <constructor-arg ref="repository" />
   </bean> 
 
@@ -46,7 +48,8 @@
   <!--    CG PERSPECTIVES BEAN DECLARATION       -->
   <!-- ========================================= -->
 
-  <bean id="bp.edit" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> <!-- defined in plugin.xml -->
+  <!-- see perspective set for EDIT action, in plugin.xml -->
+  <bean id="bp.edit" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> 
     <constructor-arg ref="repository" />
   </bean> 
 
@@ -62,8 +65,8 @@
   <!--       FILE IMPORT / EXPORT HANDLING       -->
   <!-- ========================================= -->
 
-  <!-- a worker that simply publishes any importHandlers / exportHandlers registered here in the PentahoPlatformImporter -->
-  <bean id="basicPluginImportExportPublishWorker" class="pt.webdetails.basic.plugin.workers.BasicPluginImportExportPublishWorker">
+  <!-- a bean that registers all importHandlers / exportHandlers / mimeTypes declared here in the Pentaho platform -->
+  <bean class="pt.webdetails.basic.plugin.workers.BasicPluginImportExportPublishWorker" init-method="work" lazy-init="false">
     <property name="importHandlers">
       <util:list value-type="org.pentaho.platform.plugin.services.importer.IPlatformImportHandler">
         <ref local="basicPluginImportHandler" />
@@ -79,7 +82,7 @@
     <property name="localeExportList">
       <ref bean="localeExportList" />
     </property>
-    <pen:publish as-type="INTERFACES" /> <!-- publishing bean as interface IBasicPluginWorker -->
+    <!-- <pen:publish as-type="INTERFACES" /> --> <!-- publishing bean as interface IBasicPluginWorker -->
   </bean>
 
   <!-- ========================================= -->
