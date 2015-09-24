@@ -40,10 +40,6 @@ public class BasicPluginRestApi {
 
   public BasicPluginRestApi( IUnifiedRepository repository ){
     setRepository( repository );
-
-
-    // TODO REMOVE THIS LINE IN FINAL VERSION !!! THIS IS A WORKAROUND FOR A CURRENT 6.0 PLATFORM BUG !!!
-    setRepository( PentahoSystem.get( IUnifiedRepository.class ) );
   }
 
   @GET

@@ -1,7 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 'plugin name' equals 'unequivocal plugin id' -->
 <plugin name="basic-plugin" title="Pentaho Basic Plugin">
 	
-	<overlays>
+	<!-- ========================================= -->
+  	<!--    (MANDATORY) LIFECYCLE LISTENER BEAN    -->
+  	<!-- ========================================= -->
+
+	<lifecycle-listener class="pt.webdetails.basic.plugin.BasicPluginLifecycleListener" />
+	
+	<!-- ========================================= -->
+  	<!--     CONTENT TYPE ACTIONS DECLARATION      -->
+  	<!-- ========================================= -->
+
+	<content-types>
+
+		<!-- ================================ -->
+	  	<!--   STATIC RESOURCES DECLARATION   -->
+	  	<!-- ================================ -->
+
+        <static-paths>
+        	<!-- this translates to /pentaho/api/repos/basic-plugin/resources/PATH_OF_STATIC_RESOURCE -->
+            <static-path url="/basic-plugin/resources" localFolder="resources"/>
+            <!-- add extra static-resource declarations here -->
+        </static-paths>
+
+        <content-type type="bp" mime-type="application/vnd.basic-plugin.text"> <!-- see plugin.spring.xml -->
+        	<title>TXT</title>
+	      	<operations>
+
+	      		<operation>
+		          	<id>RUN</id> 
+		          	<!-- no perspective set: uses default /generatedContent -->
+		        </operation>
+
+		        <operation>
+		          	<id>EDIT</id>
+
+		          	<!-- "perspective" equals "bean-id declared in plugin.spring.xml" 	-->
+		          	<!-- The following lookup logic is used ( by this order ): 			-->
+					<!-- (1) <file-extension> + <dot> + <perspective>  					-->
+					<!-- (2) <perspective> 												-->
+		          	<perspective>bp.edit</perspective> 
+		        </operation>
+		    </operations>
+    	</content-type>
+
+    </content-types>
+    
+    <!-- ========================================= -->
+  	<!--      EXTERNAL RESOURCES TO BE LOADED      -->
+  	<!-- ========================================= -->
+
+    <external-resources />
+
+    <!-- ========================================= -->
+  	<!-- XUL OVERLAYS DECLARATION ( TOP MENU BAR ) -->
+  	<!-- ========================================= -->
+
+    <overlays>
 		<overlay id="startup.basic-plugin" resourcebundle="content/basic-plugin/resources/lang/messages">
 			<menubar id="toolsmenu">
 	        	<menuitem id="basic-plugin" 
@@ -11,37 +68,5 @@
 	      	</menubar>
 	    </overlay>
 	</overlays>
-
-	<lifecycle-listener class="pt.webdetails.basic.plugin.BasicPluginLifecycleListener" />
-	
-	<content-types>
-
-        <static-paths>
-        	<!-- this translates to /pentaho/api/repos/basic-plugin/resources/PATH_OF_STATIC_RESOURCE -->
-            <static-path url="/basic-plugin/resources" localFolder="resources"/>
-        </static-paths>
-
-        <content-type type="txt" mime-type="text/plain">
-        	<title>TXT</title>
-	      	<operations>
-	      		<operation>
-		          	<id>RUN</id> 
-		          	<!-- no perspective set: uses default /generatedContent -->
-		        </operation>
-		        <operation>
-		          	<id>EDIT</id>
-
-		          	<!-- "perspective" equals "bean-id declared in plugin.spring.xml" 	-->
-		          	<!-- The following lookup logic is used ( by this order ): 			-->
-					<!-- (1) <file-extension> + <dot> + <perspective>  					-->
-					<!-- (2) <perspective> 												-->
-		          	<perspective>txt.edit</perspective> 
-		        </operation>
-		    </operations>
-    	</content-type>
-
-    </content-types>
-    
-    <external-resources />
 
 </plugin>

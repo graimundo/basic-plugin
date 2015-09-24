@@ -31,13 +31,13 @@
   <!--    CONTENT GENERATOR BEAN DECLARATION     -->
   <!-- ========================================= -->
 
-  <bean id="txt" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/> <!-- content generator for .txt files -->
+  <bean id="bp" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/> <!-- content generator for .bp files -->
 
   <!-- ========================================= -->
   <!--    CG PERSPECTIVES BEAN DECLARATION       -->
   <!-- ========================================= -->
 
-  <bean id="txt.edit" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/> <!-- defined in plugin.xml -->
+  <bean id="bp.edit" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/> <!-- defined in plugin.xml -->
 
   <!-- ========================================= -->
   <!--      REST ENDPOINT BEAN DECLARATION       -->
@@ -45,57 +45,91 @@
 
   <bean id="basicPluginRestApi" class="pt.webdetails.basic.plugin.web.BasicPluginRestApi">
     <constructor-arg>
-      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" />
+      <!-- dependency injection of a bean declared elsewhere, via the pen:bean -->
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
     </constructor-arg>
   </bean>
 
   <!-- ========================================= -->
-  <!--      BASIC PLUGIN BEAN DECLARATIONS       -->
+  <!--       FILE IMPORT / EXPORT HANDLING       -->
   <!-- ========================================= -->
 
-  <!-- a worker that added some file extensions to an *already existing* mime type declaration -->
-  <bean id="basicPluginSimpleExtensionAddingWorker" class="pt.webdetails.basic.plugin.workers.BasicPluginSimpleExtensionAddingWorker">
-    <constructor-arg>
+  <!-- a worker that simply publishes any importHandlers / exportHandlers registered here in the PentahoPlatformImporter -->
+  <bean id="basicPluginImportExportPublishWorker" class="pt.webdetails.basic.plugin.workers.BasicPluginImportExportPublishWorker">
+    <property name="importHandlers">
+      <util:list value-type="org.pentaho.platform.plugin.services.importer.IPlatformImportHandler">
+        <ref local="basicPluginImportHandler" />
+        <!-- add more importHandlers here -->
+      </util:list>
+    </property>
+    <property name="mimeTypeResolvers">
       <util:list value-type="org.pentaho.platform.api.mimetype.IMimeType">
-        <ref local="basicPluginMimeTypeTextPlain" />
+        <ref local="basicPluginMimeType" />
         <!-- add more mimeTypes here -->
       </util:list>
-    </constructor-arg>
+    </property>
+    <property name="localeExportList">
+      <ref bean="localeExportList" />
+    </property>
     <pen:publish as-type="INTERFACES" /> <!-- publishing bean as interface IBasicPluginWorker -->
   </bean>
 
   <!-- ========================================= -->
-  <!--        MIME TYPE BEAN DECLARATIONS        -->
+  <!--            FILE IMPORT HANDLER            -->
   <!-- ========================================= -->
 
-  <bean id="basicPluginMimeTypeTextPlain" class="org.pentaho.platform.core.mimetype.MimeType">
-    <constructor-arg value="text/plain" /> <!-- 'text/plain' mimeType defined in ImportHandlerMimeTypeDefinitions.xml -->
+  <!-- we'll just use the platform's standard importHandler, but we could've also implemented our own IPlatformImportHander -->
+  <bean id="basicPluginImportHandler" class="org.pentaho.platform.plugin.services.importer.RepositoryFileImportFileHandler"> 
     <constructor-arg>
-      <util:list>
-        <value>txt</value> <!-- adding .txt to 'text/plain' list -->
+      <util:list value-type="org.pentaho.platform.plugin.services.importer.mimeType.MimeType">
+        <ref bean="basicPluginMimeType" />
+        <!-- add more mimeTypes here -->
       </util:list>
     </constructor-arg>
-    <property name="converter">
-      <ref bean="streamConverterProxy" />
+    <property name="repository">
+      <!-- dependency injection of a bean declared elsewhere, via the pen:bean -->
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
+    </property>
+    <property name="defaultAclHandler">
+      <bean class="org.pentaho.platform.repository2.unified.jcr.InheritDefaultAclHandler" /> <!-- we'll use the default acl handler -->
     </property>
   </bean>
 
-  <!-- TODO GET IMPORT-HANDLER WORKING FOR .bp files -->
-  <bean id="basicPluginMimeTypeApplication" class="org.pentaho.platform.core.mimetype.MimeType">
-    <constructor-arg value="application/vnd.basic-plugin.text" /> <!-- and entirelly new mime type -->
+  <!-- ========================================= -->
+  <!--        LOCALE-ENABLED EXPORT LIST         -->
+  <!-- ========================================= -->
+
+  <!-- should .locales for these file types also be exported alongside the files themselves -->
+  <util:list id="localeExportList" list-class="java.util.ArrayList" value-type="java.lang.String">
+    <value>.bp</value>
+    <!-- add more file extensions here -->
+  </util:list>
+
+  <!-- ========================================= -->
+  <!--           MIME TYPE DECLARATION           -->
+  <!-- ========================================= -->
+
+  <bean id="basicPluginMimeType" class="org.pentaho.platform.core.mimetype.MimeType">
+    <constructor-arg value="application/vnd.basic-plugin.text" /> 
     <constructor-arg>
       <util:list>
-        <value>bp</value> <!-- adding .bp ( 'B'asic 'P'lugin ) file extension -->
+        <!-- adding .bp ( 'B'asic 'P'lugin ) file extension -->
+        <!-- ( nothing more that a plain .txt file that we rename to a .bp extension ) -->
+        <value>bp</value>
+        <!-- add more file extensions here --> 
       </util:list>
     </constructor-arg>
     <property name="converter">
-      <ref bean="streamConverterProxy" />
+      <ref bean="standardConverter" />
     </property>
   </bean>
 
-  <!-- TODO REMOVE THIS PROXY BEAN IN FINAL VERSION !!! THIS IS A WORKAROUND FOR A 6.0 PLATFORM BUG !!! -->
-  <bean id="streamConverterProxy" class="pt.webdetails.basic.plugin.proxy.ConverterProxy">
-    <constructor-arg value="streamConverter" /> <!-- set in ImportExport.xml -->
+  <!-- it's a text file, so a normal stream conversion will suffice -->
+  <bean id="standardConverter" class="org.pentaho.platform.plugin.services.importexport.StreamConverter">
+    <constructor-arg>
+      <!-- dependency injection of a bean declared elsewhere, via the pen:bean -->
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
+    </constructor-arg>
   </bean>
 
 </beans>

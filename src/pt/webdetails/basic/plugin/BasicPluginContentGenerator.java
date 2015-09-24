@@ -59,11 +59,6 @@ public class BasicPluginContentGenerator extends SimpleContentGenerator {
     }
   }
 
-
-  @Override public void setOutputHandler( IOutputHandler outputHandler ){
-    info( "setOutputHandler()" );
-  }
-
   public IUnifiedRepository getRepository() {
     return repository;
   }
