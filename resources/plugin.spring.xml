@@ -32,16 +32,14 @@
   <!-- ========================================= -->
 
   <!-- declared in pentahoObject.spring.xml, referenced via the pen:bean -->
-  <pen:bean id="repo" class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
+  <pen:bean id="repository" class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
 
   <!-- ========================================= -->
   <!--    CONTENT GENERATOR BEAN DECLARATION     -->
   <!-- ========================================= -->
 
   <bean id="bp" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> <!-- content generator for .bp files -->
-    <constructor-arg>
-      <ref bean="repo" />
-    </constructor-arg>
+    <constructor-arg ref="repository" />
   </bean> 
 
   <!-- ========================================= -->
@@ -49,9 +47,7 @@
   <!-- ========================================= -->
 
   <bean id="bp.edit" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> <!-- defined in plugin.xml -->
-    <constructor-arg>
-      <ref bean="repo" />
-    </constructor-arg>
+    <constructor-arg ref="repository" />
   </bean> 
 
   <!-- ========================================= -->
@@ -59,9 +55,7 @@
   <!-- ========================================= -->
 
   <bean id="basicPluginRestApi" class="pt.webdetails.basic.plugin.web.BasicPluginRestApi">
-    <constructor-arg>
-      <ref bean="repo" />
-    </constructor-arg>
+    <constructor-arg ref="repository" />
   </bean>
 
   <!-- ========================================= -->
@@ -100,9 +94,7 @@
         <!-- add more mimeTypes here -->
       </util:list>
     </constructor-arg>
-    <property name="repository">
-      <ref bean="repo" />
-    </property>
+    <property name="repository" ref="repository" />
     <property name="defaultAclHandler">
       <bean class="org.pentaho.platform.repository2.unified.jcr.InheritDefaultAclHandler" /> <!-- we'll use the default acl handler -->
     </property>
@@ -133,15 +125,12 @@
       </util:list>
     </constructor-arg>
     <property name="converter">
-      <ref bean="standardConverter" />
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.Converter">
+        <pen:attributes>
+          <pen:attr key="id" value="streamConverter"/> <!-- defined in importExport.xml -->
+        </pen:attributes>
+      </pen:bean>
     </property>
-  </bean>
-
-  <!-- it's a text file, so a normal stream conversion will suffice -->
-  <bean id="standardConverter" class="org.pentaho.platform.plugin.services.importexport.StreamConverter">
-    <constructor-arg>
-      <ref bean="repo" /> 
-    </constructor-arg>
   </bean>
 
 </beans>
