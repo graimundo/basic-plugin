@@ -28,16 +28,31 @@
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
 
   <!-- ========================================= -->
+  <!--   ( USEFUL ) REUSABLE BEAN DECLARATIONS   -->
+  <!-- ========================================= -->
+
+  <!-- declared in pentahoObject.spring.xml, referenced via the pen:bean -->
+  <pen:bean id="repo" class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
+
+  <!-- ========================================= -->
   <!--    CONTENT GENERATOR BEAN DECLARATION     -->
   <!-- ========================================= -->
 
-  <bean id="bp" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/> <!-- content generator for .bp files -->
+  <bean id="bp" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> <!-- content generator for .bp files -->
+    <constructor-arg>
+      <ref bean="repo" />
+    </constructor-arg>
+  </bean> 
 
   <!-- ========================================= -->
   <!--    CG PERSPECTIVES BEAN DECLARATION       -->
   <!-- ========================================= -->
 
-  <bean id="bp.edit" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"/> <!-- defined in plugin.xml -->
+  <bean id="bp.edit" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> <!-- defined in plugin.xml -->
+    <constructor-arg>
+      <ref bean="repo" />
+    </constructor-arg>
+  </bean> 
 
   <!-- ========================================= -->
   <!--      REST ENDPOINT BEAN DECLARATION       -->
@@ -45,8 +60,7 @@
 
   <bean id="basicPluginRestApi" class="pt.webdetails.basic.plugin.web.BasicPluginRestApi">
     <constructor-arg>
-      <!-- dependency injection of a bean declared elsewhere, via the pen:bean -->
-      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
+      <ref bean="repo" />
     </constructor-arg>
   </bean>
 
@@ -87,8 +101,7 @@
       </util:list>
     </constructor-arg>
     <property name="repository">
-      <!-- dependency injection of a bean declared elsewhere, via the pen:bean -->
-      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
+      <ref bean="repo" />
     </property>
     <property name="defaultAclHandler">
       <bean class="org.pentaho.platform.repository2.unified.jcr.InheritDefaultAclHandler" /> <!-- we'll use the default acl handler -->
@@ -127,8 +140,7 @@
   <!-- it's a text file, so a normal stream conversion will suffice -->
   <bean id="standardConverter" class="org.pentaho.platform.plugin.services.importexport.StreamConverter">
     <constructor-arg>
-      <!-- dependency injection of a bean declared elsewhere, via the pen:bean -->
-      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
+      <ref bean="repo" /> 
     </constructor-arg>
   </bean>
 

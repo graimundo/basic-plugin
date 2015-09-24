@@ -13,11 +13,9 @@
 package pt.webdetails.basic.plugin;
 
 import org.apache.commons.io.IOUtils;
-import org.pentaho.platform.api.engine.IOutputHandler;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
 import pt.webdetails.cpf.SimpleContentGenerator;
 import pt.webdetails.cpf.utils.MimeTypes;
 import pt.webdetails.cpf.utils.PluginIOUtils;
@@ -28,7 +26,11 @@ import java.io.InputStream;
 
 public class BasicPluginContentGenerator extends SimpleContentGenerator {
 
-  private IUnifiedRepository repository = PentahoSystem.get( IUnifiedRepository.class );
+  private IUnifiedRepository repository;
+
+  public BasicPluginContentGenerator( IUnifiedRepository repository ){
+    setRepository( repository );
+  }
 
   @Override public void createContent() throws Exception {
     info( "createContent()" );
