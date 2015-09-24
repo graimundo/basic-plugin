@@ -185,6 +185,7 @@
   <!-- Overriding resolve target so we can add resolve-dev -->
   
   <target name="resolve" depends="subfloor.resolve" >
+    <mkdir dir="${runtimelib.dir}" />
     <copy todir="${runtimelib.dir}" overwrite="true">
     	<fileset dir="${lib.dir}">
     		<include name="cpf-*.jar" />
@@ -196,7 +197,7 @@
   <target name="clean" depends="subfloor.clean" >
     <delete dir="${lib.dir}" verbose="true"/>
     <delete dir="${testlib.dir}" verbose="true"/>
-    <!-- <delete dir="${runtimelib.dir}" verbose="true"/> -->
+    <delete dir="${runtimelib.dir}" verbose="true"/>
   </target>
 
 </project>
