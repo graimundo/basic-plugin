@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:ws="http://jax-ws.dev.java.net/spring/core" 
+       xmlns:wss="http://jax-ws.dev.java.net/spring/servlet" 
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+                           http://jax-ws.dev.java.net/spring/core http://jax-ws.dev.java.net/spring/core.xsd
+                           http://jax-ws.dev.java.net/spring/servlet http://jax-ws.dev.java.net/spring/servlet.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+                           http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd"
+       default-lazy-init="true">
+
+  <!-- ========================================= -->
+  <!--    BASE PLUGIN.SPRING.XML DECLARATIONS    -->
+  <!-- ========================================= -->
+
+  <context:annotation-config />
+
+  <!-- (optional) When added as a bean to a Spring context this class will register the ApplicationContext as 
+        a StandalongSpringPentahoObjectFactory with the PentahoSystem --> 
+  <!-- <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" lazy-init="false"/> -->
+
+  <!-- ========================================= -->
+  <!--   ( USEFUL ) REUSABLE BEAN DECLARATIONS   -->
+  <!-- ========================================= -->
+
+  <!-- declared in pentahoObject.spring.xml, referenced via the pen:bean -->
+  <pen:bean id="repository" class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository" /> 
+
+  <!-- ========================================= -->
+  <!--    CONTENT GENERATOR BEAN DECLARATION     -->
+  <!-- ========================================= -->
+
+  <!-- content generator for .properties files -->
+  <bean id="properties" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> 
+    <constructor-arg ref="repository" />
+  </bean> 
+
+  <!-- ========================================= -->
+  <!--    CG PERSPECTIVES BEAN DECLARATION       -->
+  <!-- ========================================= -->
+
+  <!-- see perspective set for EDIT action, in plugin.xml -->
+  <bean id="properties.edit" class="pt.webdetails.basic.plugin.BasicPluginContentGenerator" scope="prototype"> 
+    <constructor-arg ref="repository" />
+  </bean> 
+
+</beans>

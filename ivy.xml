@@ -20,6 +20,14 @@
   <dependencies defaultconf="default->default">
 
     <dependency org="${pentaho.group}" name="pentaho-platform-api" rev="${dependency.pentaho.revision}" transitive="false"  changing="true" />
+    <dependency org="${pentaho.group}" name="pentaho-platform-core" rev="${dependency.pentaho.revision}" transitive="false" changing="true" />
+
+    <dependency org="commons-logging" name="commons-logging" rev="${dependency.commons.logging.revision}" transitive="false" />
+    <dependency org="commons-lang" name="commons-lang" rev="${dependency.commons.lang.revision}" transitive="false" />
+    <dependency org="commons-io" name="commons-io" rev="${dependency.commons.io.revision}"  transitive="false" />
+
+    <dependency org="javax.servlet" name="javax.servlet-api" rev="3.0.1" transitive="false"/>
+    <dependency org="javax.ws.rs" name="javax.ws.rs-api" rev="2.0" transitive="false"/>
     
   </dependencies>
 
