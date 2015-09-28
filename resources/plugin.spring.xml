@@ -50,4 +50,16 @@
     <constructor-arg ref="repository" />
   </bean> 
 
+  <!-- ========================================= -->
+  <!--      REST ENDPOINT BEAN DECLARATION       -->
+  <!-- ========================================= -->
+
+  <!-- ( mandatory ) JAX-RS beans entry point -->
+  <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
+
+  <!-- REST api bean declaration -->
+  <bean id="basicPluginRestApi" class="pt.webdetails.basic.plugin.web.BasicPluginRestApi">
+    <constructor-arg ref="repository" />
+  </bean>
+
 </beans>
