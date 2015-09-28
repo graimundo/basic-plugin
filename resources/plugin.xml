@@ -55,4 +55,10 @@
     	<file context="mantle">api/repos/basic-plugin/resources/basic-plugin-startup.js</file>
   	</external-resources>
 
+  	<!-- ================================ -->
+  	<!--     LIFECYCLE LISTENER BEAN      -->
+  	<!-- ================================ -->
+
+	<lifecycle-listener class="pt.webdetails.basic.plugin.BasicPluginLifecycleListener" />
+
 </plugin>
