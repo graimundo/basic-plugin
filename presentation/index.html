@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Pentaho World 2015: Building your own PUC Plugin</title>
+
+		<meta name="description" content="Pentaho World 2015">
+		<meta name="author" content="pteixeira@pentaho.com">
+		<meta name="author" content="graimundo@pentaho.com">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/pedro.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				
+				<!-- slide -->
+				<section>
+					<h2>Pentaho World 2015</h2>
+					<br />
+					<br />
+					<h3 style="color: black">Building you own PUC Plugin</h3>
+					<br />
+					<h4 style="color: black">a for-dev-by-devs talk</h4>
+					<br/>
+					<p style="color: black;font-size: 20px;">Pedro Teixeira | pteixeira@pentaho.com</p>
+					<p style="color: black;font-size: 20px;">Guilherme Raimundo | graimundo@pentaho.com</p>
+					<br/>
+				</section>
+
+				<!-- slide -->
+				<section>
+					<h4>Building your own PUC Plugin ( 1 of 3 )</h4>
+					<p style="font-size: 26px;"><i>git branch</i>&nbsp;/basic-plugin</p>
+					<br />
+					<br />
+					<ul style="font-size: 24px;">
+						<li class="fragment">01. Getting started
+							<ul>
+								<li style="font-size: 20px;">a barebone plugin that is recognized in the platform</li>
+							</ul>
+						</li><br/>
+						<li class="fragment">02. Content Types and Content Generators
+							<ul>
+								<li style="font-size: 20px;">Assign a specific content-type handling to your plugin</li>
+								<li style="font-size: 20px;">Create a IContentGenerator class for the that content-type</li>
+							</ul>
+						</li><br/>
+						<li class="fragment">03. Static and External resources
+							<ul>
+								<li style="font-size: 20px;">Assign a specific folder as a static content holder</li>
+								<li style="font-size: 20px;">Embed external resources into the standard platform resource requests</li>
+							</ul>
+						</li><br/>
+					</ul>
+				</section>	
+
+				<!-- slide -->
+				<section>
+					<h4>Building your own PUC Plugin ( 2 of 3 )</h4>
+					<p style="font-size: 26px;"><i>git branch</i>&nbsp;/basic-plugin</p>
+					<br />
+					<br />
+					<ul style="font-size: 24px;">
+						<li class="fragment">04. REST endpoints
+							<ul>
+								<li style="font-size: 20px;">Create and expose REST endpoints</li>
+							</ul>
+						</li><br/>
+						<li class="fragment">05. Lifecycle Listener
+							<ul>
+								<li style="font-size: 20px;">Register a lifecycle listener</li>
+								<li style="font-size: 20px;">Create a IPluginLifecycleListener</li>
+							</ul>
+						</li><br/>
+						<li class="fragment">06. Perspectives and Overlays
+							<ul>
+								<li style="font-size: 20px;">Register a perspective and some different overlays</li>
+							</ul>
+						</li><br/>
+					</ul>
+				</section>	
+
+				<!-- slide -->
+				<section>
+					<h4>Building your own PUC Plugin ( 3 of 3 )</h4>
+					<p style="font-size: 26px;"><i>git branch</i>&nbsp;/basic-plugin</p>
+					<br />
+					<br />
+					<ul style="font-size: 24px;">
+						<li class="fragment">07. Dedicated content type and ImportHandlers
+							<ul>
+								<li style="font-size: 20px;">Create our own MIME type and file extension and register it in the platform</li>
+								<li style="font-size: 20px;">Create a IPlatformImportHandler and a IMimeType and register them in the platform</li>
+							</ul>
+						</li><br/>
+						<li class="fragment">08. Sparkl: quick-building a PUC plugin</li><br/>
+						<li class="fragment">09. 6.0 OSGi PUC Plugins<ul>
+								<li style="font-size: 20px;">Marketplace: a 6.0 OSGi plugin</li>
+							</ul>
+						</li><br/
+					</ul>
+				</section>			
+
+				<!-- slide -->
+				<section>
+					<h4>01. Getting started: essentials</h4>
+					<p style="font-size: 26px;"><i>git branch</i>&nbsp;/basic-plugin/tree/01_gettting_started</p>
+					<br />
+					<br />
+					<ul>
+						<li class="fragment">Apache Ant ( ant.apache.org )</li><br/>
+						<li class="fragment">create a plugin.xml</li><br/>
+						<li class="fragment" style="width: 670px;">
+							<pre><code data-trim class="xml" style="font-size: 18px;">
+<!-- 'plugin name' equals 'unambiguous plugin id' -->
+<plugin name="basic-plugin" title="Pentaho Basic Plugin">
+<!-- plugin definitions go here -->
+</plugin></code></pre>
+						</li><br/>
+					</ul>
+				</section>
+
+				<!-- slide -->
+				<section>
+					<h4>02. Content Type / Content Generator</h5>
+					<p style="font-size: 26px;"><i>git branch</i>&nbsp;/basic-plugin/tree/02_content_types_and_generators</p>
+					<br />
+					<ul>
+						<li class="fragment">Assign the plugin some content type</li><br/>
+						<li class="fragment" style="width: 580px;">
+<pre><code data-trim class="xml" style="font-size: 18px;">
+<content-type type="txt" mime-type="text/plain">
+&nbsp;&nbsp;&nbsp;<operation>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<id>RUN</id>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<perspective>run.txt.files</perspective> 
+&nbsp;&nbsp;&nbsp;</operation>
+</content-type>
+</code></pre>
+						</li><br/>
+						<li class="fragment">Declare an IContentGenerator in plugin.spring.xml</li><br/>
+						<li class="fragment" style="width: 900px;">
+<pre>
+<code data-trim class="xml" style="font-size: 16px;">
+<bean id="run.txt.files" class="org.mycompany.TxtContentGenerator" scope="prototype" />
+</code></pre>
+						</li><br/>
+					</ul>
+				</section>
+
+				<!-- slide -->
+				<section>
+					<h4>02. Content Type / Content Generator</h5>
+					<p style="font-size: 26px;"><i>git branch</i>&nbsp;/basic-plugin/tree/02_content_types_and_generators</p>
+					<br />
+					<br />
+					<ul>
+						<li class="fragment">Create the IContentGenerator class</li><br/>
+						<li class="fragment" style="width: 700px;">
+<pre><code data-trim class="java" style="font-size: 16px;">
+package org.mycompany;
+
+import org.pentaho.platform.api.engine.IContentGenerator;
+
+public class TxtContentGenerator implements IContentGenerator {
+
+	@Override public void createContent() throws Exception {
+			/* write content to httpResponse output */
+	}
+}
+</code></pre>
+						</li><br/>
+					</ul>
+				</section>	
+
+				<!-- slide -->
+				<section>
+					<h4>03. Static and External resources</h5>
+					<p style="font-size: 26px;"><i>git branch</i>&nbsp;/basic-plugin/tree/03_static_and_external_resources</p>
+					<br />
+					<br />
+					<ul>
+						<li class="fragment">Create a folder to act as a static resource holder
+							<br/>
+							<ul>
+								<li style="font-size: 20px; font-family: monospace;">basic-plugin/plugin.xml</li>
+								<li style="font-size: 20px; font-family: monospace;">basic-plugin/plugin.spring.xml</li>
+								<li style="font-size: 20px; font-family: monospace;">basic-plugin<b>/resources/</b></li>
+							</ul>
+						</li><br/>
+						<li class="fragment">In plugin.xml identify <b>/resources</b> as a static resource holder</li><br/>
+						<li class="fragment" style="width: 800px;">
+<pre><code data-trim class="xml" style="font-size: 16px;">
+<content-type type="txt" mime-type="text/plain">
+&nbsp;&nbsp;&nbsp;<static-paths>
+<!-- this translates to /api/repos/basic-plugin/resources/<STATIC_RESOURCE> -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<static-path url="/basic-plugin/resources" localFolder="resources"/>
+&nbsp;&nbsp;&nbsp;</static-paths>
+</content-type>
+</code></pre>
+						</li><br/>
+					</ul>
+				</section>				
+
+				<!-- slide -->
+				<section>
+					<h2>TODO</h2>
+				</section>				
+
+				<!-- slide -->
+				<section>
+					<h3>Questions ?</h3>
+				</section>
+					
+				<!-- slide -->
+				<section>
+					<h3>Thank you</h3>
+					<br />
+					<p style="color: black;font-size: 24px;">Pedro Teixeira | pteixeira@pentaho.com</p>
+					<p style="color: black;font-size: 24px;">Guilherme Raimundo | graimundo@pentaho.com</p>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
